@@ -1,0 +1,17 @@
+{% extends 'todos/!base.html' %}
+
+
+{% block style %}
+{% endblock style %}
+
+
+{% block body %}
+<h1>{{ todo.title }}</h1>
+
+<p>{{ todo.completed }}</p>
+<p>{{ todo.category }}</p>
+<p>{{ todo.priority }}</p>
+<p>{{ todo.created_at }}</p>
+<p>{{ todo.deadline }}</p>
+<p>{{ todo.content }}</p>
+{% endblock body %}

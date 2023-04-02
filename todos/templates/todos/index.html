@@ -1,0 +1,27 @@
+{% extends 'todos/!base.html' %}
+
+
+{% block style %}
+h1 {
+    margin-top: 30px;
+}
+
+
+#create-btn {
+    height: 40px;
+    margin-top: 30px;
+}
+{% endblock style %}
+
+
+{% block body %}
+    <div class="d-flex justify-content-between">
+        <h1>To Do LIST</h1>
+        <a class='btn btn-secondary' id='create-btn' href="{% url 'todos:new' %}">+ 할 일 추가</a>
+    </div>
+    
+    {% for todo in todos %}
+        <a href="{% url 'todos:detail' todo.pk %}"><span>{{ todo.title }}</span></a>
+        <span>{{ todo.deadline }}</span>
+    {% endfor %}
+{% endblock body %}

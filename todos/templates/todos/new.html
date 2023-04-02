@@ -1,0 +1,39 @@
+{% extends 'todos/!base.html' %}
+
+
+{% block style %}
+h1 {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+#title {
+    width: 500px;
+}
+
+#content {
+    width: 500px;
+    height: 100px;
+}
+{% endblock style %}
+
+
+{% block body %}
+    <h1>To Do 생성하기</h1>
+
+    <form action="{% url 'todos:create' %}" method='POST'>
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="title" class="form-label">제목</label>
+            <input type="text" class="form-control" id="title" name="title">
+        </div>
+        <div>
+            <label for="content" class="form-label">내용</label>
+            <textarea class="form-control" name="content" id="content" cols="30" rows="10"></textarea>
+        </div>
+
+
+        <button type="submit" class="btn btn-outline-primary mt-4">생성하기</button>
+        <a class="btn btn-outline-primary mt-4" href="{% url 'todos:index' %}">뒤로가기</a>
+    </form>
+{% endblock body %}
