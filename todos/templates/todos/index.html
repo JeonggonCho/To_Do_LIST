@@ -2,24 +2,87 @@
 
 
 {% block style %}
+.navbar {
+    background-color: white;
+    height: 100px;
+    padding: 0;
+}
+
+
 h1 {
     margin-top: 30px;
+    font-size: 40px;
+    margin-top: 5px;
+}
+
+
+#task-cnt {
+    height: 45px;
+    padding-top: 8px;
+    padding-right: 10px;
+    padding-left: 10px;
+    font-size: 20px;
+    border-radius: 10px;
+    background-color: #E0E0E0;
 }
 
 
 #create-btn {
-    height: 40px;
-    margin-top: 30px;
+    height: 36px;
+    width: 100px;
+    margin-top: 4px;
+    font-size: 15px;
+    padding-bottom: 3px;
+}
+
+.padding {
+    padding-right: 8%;
+    padding-left: 8%;
+}
+
+
+.font-gray {
+    color: #949494;
+}
+
+
+.font-lightgray {
+    color: #777777;
+}
+
+
+.font-18 {
+    font-size: 18px;
 }
 {% endblock style %}
 
 
 {% block body %}
-    <div class="d-flex justify-content-between">
-        <h1>To Do LIST</h1>
-        <a class='btn btn-secondary' id='create-btn' href="{% url 'todos:new' %}">+ 할 일 추가</a>
+    <div class="navbar d-flex justify-content-between padding">
+        <h1>To Do LIST 🗓️</h1>
+        <div id='task-cnt'>
+            <span>Tasks</span>
+            <span>/</span>
+        </div>
     </div>
-    
+
+    <div class="d-flex justify-content-between mt-4 padding">
+        <h2>Tasks</h2>
+        <span class="font-gray font-18 mt-2 ms-5 flex-grow-1"><b>정렬 | </b></span>
+
+        <a class='btn btn-secondary' id='create-btn' href="{% url 'todos:new' %}">+ 할 일 생성</a>
+    </div>
+
+    <div class='d-flex justify-content-between mt-4 padding'>
+        <span class="font-lightgray col-4 ms-4">할 일</span>
+        <span class="font-lightgray col-2">카테고리</span>
+        <span class="font-lightgray col-2">마감일</span>
+        <span class="font-lightgray col-1">수 정</span>
+        <span class="font-lightgray col-1">삭 제</span>
+        <span class="font-lightgray me-1">완 료</span>
+    <div>
+
+    </div>
     {% for todo in todos %}
         <a href="{% url 'todos:detail' todo.pk %}"><span>{{ todo.title }}</span></a>
         <span>{{ todo.deadline }}</span>
