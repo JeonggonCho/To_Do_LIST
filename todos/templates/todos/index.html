@@ -16,6 +16,12 @@ h1 {
 }
 
 
+a {
+    text-decoration: none;
+    color: #333333
+}
+
+
 #task-cnt {
     height: 45px;
     padding-top: 8px;
@@ -35,9 +41,24 @@ h1 {
     padding-bottom: 3px;
 }
 
+
+.card {
+    height: 100px;
+    border: none;
+    background-color: white;
+    border-radius: 10px;
+}
+
+
 .padding {
     padding-right: 8%;
     padding-left: 8%;
+}
+
+
+.margin {
+    margin-right: 8%;
+    margin-left: 8%;
 }
 
 
@@ -62,15 +83,15 @@ h1 {
         <h1>To Do LIST 🗓️</h1>
         <div id='task-cnt'>
             <span>Tasks</span>
-            <span>/</span>
+            <span>/ {{ todos_num }}</span>
         </div>
     </div>
 
     <div class="d-flex justify-content-between mt-4 padding">
         <h2>Tasks</h2>
-        <span class="font-gray font-18 mt-2 ms-5 flex-grow-1"><b>정렬 | </b></span>
+        <span class="font-gray font-18 mt-2 ms-4 flex-grow-1"><b>정렬 | </b></span>
 
-        <a class='btn btn-secondary' id='create-btn' href="{% url 'todos:new' %}">+ 할 일 생성</a>
+        <a class='btn btn-secondary' id='create-btn' href="{% url 'todos:create' %}">+ 할 일 생성</a>
     </div>
 
     <div class='d-flex justify-content-between mt-4 padding'>
@@ -79,12 +100,19 @@ h1 {
         <span class="font-lightgray col-2">마감일</span>
         <span class="font-lightgray col-1">수 정</span>
         <span class="font-lightgray col-1">삭 제</span>
-        <span class="font-lightgray me-1">완 료</span>
-    <div>
-
+        <span class="font-lightgray me-4">완 료</span>
     </div>
+
+    <div>
     {% for todo in todos %}
-        <a href="{% url 'todos:detail' todo.pk %}"><span>{{ todo.title }}</span></a>
-        <span>{{ todo.deadline }}</span>
+        <div class="card d-flex justify-content-between mt-3 margin">
+            <span class="col-4 ms-4"><a href="{% url 'todos:detail' todo.pk %}">{{ todo.title }}</a></span>
+            <span class="col-2">{{ todo.category }}</span>
+            <span class="col-2">{{ todo.deadline|date:'Y-m-d' }}</span>
+
+            <a href="{% url 'todos:update' todo.pk %}">수정하기</a>
+            <a href="{% url 'todos:delete' todo.pk %}">삭제하기</a>
+        </div>
+    </div>
     {% endfor %}
 {% endblock body %}

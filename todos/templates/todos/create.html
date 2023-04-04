@@ -1,0 +1,17 @@
+{% extends 'todos/!base.html' %}
+
+
+{% block style %}
+{% endblock style %}
+
+
+{% block body %}
+    <h1>To Do 생성하기</h1>
+
+    <form action="{% url 'todos:create' %}" method='POST'>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <a class="btn btn-secondary mt-4" href="{% url 'todos:index' %}">뒤로가기</a>
+        <button type="submit" class="btn btn-primary mt-4">생성하기</button>
+    </form>
+{% endblock body %}

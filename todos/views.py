@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect
 from .models import Todo
+from .forms import TodoForm
 
 # Create your views here.
 def index(request):
     todos = Todo.objects.all()
+    todos_num = Todo.objects.all().count()
     context ={
-        'todos': todos
+        'todos': todos,
+        'todos_num': todos_num
     }
     return render(request, 'todos/index.html', context)
 
@@ -18,33 +21,37 @@ def detail(request, todo_pk):
     return render(request, 'todos/detail.html', context)
 
 
-def new(request):
-    return render(request, 'todos/new.html')
-
-
 def create(request):
-    title = request.POST.get('title')
-    content = request.POST.get('content')
-    priority = request.POST.get('priority')
-    deadline = request.POST.get('deadline')
-
-    todo = Todo(
-                title=title,
-                content=content,
-                priority=priority,
-                deadline=deadline
-                )
-    todo.save()
-
-    return redirect('todos:index')
-
-
-def edit(request, todo_pk):
-    return render(request, 'todos/edit.html')
+    if request.method == 'POST':
+        form = TodoForm(request.POST)
+        if form.is_valid():
+            todo = form.save()
+            return redirect('todos:detail', todo.pk)
+    else:
+        form = TodoForm()
+    context = {
+        'form': form,
+    }
+    return render(request, 'todos/create.html', context)
 
 
 def update(request, todo_pk):
-    return redirect('todos:detail', todo_pk)
+    todo = Todo.objects.get(pk=todo_pk)
+    if request.method == 'POST':
+        form = TodoForm(request.POST, instance=todo)
+        if form.is_valid():
+            form.save()
+            return redirect('todos:detail', todo.pk)
+    else:
+        form = TodoForm(instance=todo)
+    context = {
+        'todo': todo,
+        'form': form,
+    }
+    return render(request, 'todos/update.html', context)
 
-def delete(request):
+
+def delete(request, todo_pk):
+    todo = Todo.objects.get(pk=todo_pk)
+    todo.delete()
     return redirect('todos:index')
