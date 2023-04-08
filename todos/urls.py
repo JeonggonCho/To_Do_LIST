@@ -10,4 +10,5 @@ urlpatterns = [
     # path('edit/<int:todo_pk/>', views.edit, name='edit'),
     path('update/<int:todo_pk>/', views.update, name='update'),
     path('delete/<int:todo_pk>/', views.delete, name='delete'),
+    path('category>/', views.category, name='category'),
 ]

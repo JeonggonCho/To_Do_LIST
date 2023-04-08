@@ -22,13 +22,6 @@ class TodoForm(forms.ModelForm):
         ),
     )
 
-    priority = forms.IntegerField(
-        label='우선 순위',
-        widget=forms.NumberInput(
-            attrs={'min': 1, 'max': 5, 'value': 3},
-        ),
-    )
-
     deadline = forms.DateField(
         label='마감일',
         widget=forms.DateInput(

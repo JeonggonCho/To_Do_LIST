@@ -6,15 +6,18 @@
 
 
 {% block body %}
-<h1>{{ todo.title }}</h1>
+    <div class="mt-4 padding">
+        <h3>{{ todo.title }}</h3>
 
-<p>완료: {{ todo.completed }}</p>
-<p>카테고리: {{ todo.category }}</p>
-<p>우선순위: {{ todo.priority }}</p>
-<p>생성일: {{ todo.created_at|date:'Y-m-d' }}</p>
-<p>마감일: {{ todo.deadline|date:'Y-m-d' }}</p>
-<p>내용 : {{ todo.content }}</p>
+        <p>완료: {{ todo.completed }}</p>
+        <p>카테고리: {{ todo.category }}</p>
+        <p>우선순위: {{ todo.priority }}</p>
+        <p>생성일: {{ todo.created_at|date:'Y-m-d' }}</p>
+        <p>마감일: {{ todo.deadline|date:'Y-m-d' }}</p>
+        <p>내용 : {{ todo.content }}</p>
 
-<a class="btn btn-secondary" href="{% url 'todos:index' %}">뒤로가기</a>
-<a class="btn btn-danger" href="{% url 'todos:delete' todo.pk %}">삭제하기</a>
+        <a class="btn btn-secondary" href="{% url 'todos:index' %}">뒤로가기</a>
+        <a class="btn btn-secondary" href="{% url 'todos:update' todo.pk %}">수정하기</a>
+        <a class="btn btn-danger" href="{% url 'todos:delete' todo.pk %}">삭제하기</a>
+    </div>
 {% endblock body %}

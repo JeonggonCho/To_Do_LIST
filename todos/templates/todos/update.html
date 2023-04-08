@@ -6,12 +6,14 @@
 
 
 {% block body %}
-    <h1>To Do 수정하기</h1>
+    <div class="mt-4 padding">
+        <h3>수정하기</h3>
 
-    <form action="{% url 'todos:update' todo.pk %}" method='POST'>
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-outline-primary mt-4">수정하기</button>
-        <a class="btn btn-outline-primary mt-4" href="{% url 'todos:index' %}">뒤로가기</a>
-    </form>
+        <form action="{% url 'todos:update' todo.pk %}" method='POST'>
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-outline-primary mt-4">수정하기</button>
+            <a class="btn btn-outline-primary mt-4" href="{% url 'todos:index' %}">뒤로가기</a>
+        </form>
+    </div>
 {% endblock body %}

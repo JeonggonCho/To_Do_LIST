@@ -6,22 +6,30 @@ from .forms import TodoForm
 def index(request):
     todos = Todo.objects.all()
     todos_num = Todo.objects.all().count()
+    todos_done = Todo.objects.filter(completed=True).count()
     context ={
         'todos': todos,
-        'todos_num': todos_num
+        'todos_num': todos_num,
+        'todos_done': todos_done,
     }
     return render(request, 'todos/index.html', context)
 
 
 def detail(request, todo_pk):
     todo = Todo.objects.get(pk=todo_pk)
-    context = {
-        'todo': todo
+    todos_num = Todo.objects.all().count()
+    todos_done = Todo.objects.filter(completed=True).count()
+    context ={
+        'todo': todo,
+        'todos_num': todos_num,
+        'todos_done': todos_done,
     }
     return render(request, 'todos/detail.html', context)
 
 
 def create(request):
+    todos_num = Todo.objects.all().count()
+    todos_done = Todo.objects.filter(completed=True).count()
     if request.method == 'POST':
         form = TodoForm(request.POST)
         if form.is_valid():
@@ -31,11 +39,15 @@ def create(request):
         form = TodoForm()
     context = {
         'form': form,
+        'todos_num': todos_num,
+        'todos_done': todos_done,
     }
     return render(request, 'todos/create.html', context)
 
 
 def update(request, todo_pk):
+    todos_num = Todo.objects.all().count()
+    todos_done = Todo.objects.filter(completed=True).count()
     todo = Todo.objects.get(pk=todo_pk)
     if request.method == 'POST':
         form = TodoForm(request.POST, instance=todo)
@@ -45,8 +57,10 @@ def update(request, todo_pk):
     else:
         form = TodoForm(instance=todo)
     context = {
-        'todo': todo,
         'form': form,
+        'todo': todo,
+        'todos_num': todos_num,
+        'todos_done': todos_done,
     }
     return render(request, 'todos/update.html', context)
 
@@ -55,3 +69,11 @@ def delete(request, todo_pk):
     todo = Todo.objects.get(pk=todo_pk)
     todo.delete()
     return redirect('todos:index')
+
+
+def category(request, category):
+    category = Todo.objects.filter(category=request.POST)
+    context = {
+        'todos': category,
+    }
+    return render(request, 'todos/index.html', context)

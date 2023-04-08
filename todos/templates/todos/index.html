@@ -2,38 +2,7 @@
 
 
 {% block style %}
-.navbar {
-    background-color: white;
-    height: 100px;
-    padding: 0;
-}
-
-
-h1 {
-    margin-top: 30px;
-    font-size: 40px;
-    margin-top: 5px;
-}
-
-
-a {
-    text-decoration: none;
-    color: #333333
-}
-
-
-#task-cnt {
-    height: 45px;
-    padding-top: 8px;
-    padding-right: 10px;
-    padding-left: 10px;
-    font-size: 20px;
-    border-radius: 10px;
-    background-color: #E0E0E0;
-}
-
-
-#create-btn {
+.create-btn {
     height: 36px;
     width: 100px;
     margin-top: 4px;
@@ -41,78 +10,184 @@ a {
     padding-bottom: 3px;
 }
 
-
-.card {
-    height: 100px;
+.card-form {
+    height: 65px;
     border: none;
     background-color: white;
     border-radius: 10px;
 }
 
-
-.padding {
-    padding-right: 8%;
-    padding-left: 8%;
+.card-form:hover {
+    border: 0.2px solid gray;
+    box-shadow: 1px 1px 10px lightgray;
 }
 
-
-.margin {
-    margin-right: 8%;
-    margin-left: 8%;
+.cate-home {
+    height: 50px;
+    width: 6px;
+    background-color: #F1C0C0;
+    margin-right: 10px;
+    margin-left: 8px;
 }
 
+.cate-culture {
+    height: 50px;
+    width: 6px;
+    background-color: #E4F1C0;
+    margin-right: 10px;
+    margin-left: 8px;
+}
+
+.cate-work {
+    height: 50px;
+    width: 6px;
+    background-color: #C0CEF1;
+    margin-right: 10px;
+    margin-left: 8px;
+}
+
+.cate-study {
+    height: 50px;
+    width: 6px;
+    background-color: #F1E6C0;
+    margin-right: 10px;
+    margin-left: 8px;
+}
+
+.check-box {
+    width: 20px;
+    height: 20px;
+    margin-left: 20px;
+}
+
+.top-btn {
+    position: fixed;
+    bottom: 35px;
+    right: 35px;
+    width: 45px;
+    height: 45px;
+    background-color: #5C636A;
+    color: white;
+    border-radius: 20%;
+    text-align: center;
+    line-height: 55px;
+    z-index: 1000;
+}
+
+.select-box {
+    width: 120px;
+    height: 37px;
+    margin-top: 4px;
+    background-color: #6c757d;
+    color: white;
+    font-size: 15px;
+}
+
+.top-btn:active {
+    background-color: #444444;
+}
 
 .font-gray {
-    color: #949494;
-}
-
-
-.font-lightgray {
     color: #777777;
 }
 
+.font-lightgray {
+    color: #999999;
+}
 
 .font-18 {
     font-size: 18px;
+}
+
+.font-14 {
+    font-size: 14px;
+}
+
+.font-12 {
+    font-size: 12px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.nothing {
+    margin-top: 12rem;
+    font-size: 30px;
+    text-align: center;
 }
 {% endblock style %}
 
 
 {% block body %}
-    <div class="navbar d-flex justify-content-between padding">
-        <h1>To Do LIST 🗓️</h1>
-        <div id='task-cnt'>
-            <span>Tasks</span>
-            <span>/ {{ todos_num }}</span>
+    {% comment %} 정렬 및 카테고리, 생성버튼 {% endcomment %}
+    <div class="d-flex justify-content-between mt-4 padding align-items-center">
+        <h3>Tasks</h3>
+        <span class="font-gray font-14 ms-4 flex-grow-1">정렬 | </span>
+
+        <form action="{% url 'todos:category' %}" method='POST'>
+            {% csrf_token %}
+            <select class="form-select select-box" name='category' id='category'>
+                <option selected>카테고리별</option>
+                <option value="집안일">집안일</option>
+                <option value="문화생활">문화생활</option>
+                <option value="업무">업무</option>
+                <option value="자기계발">자기계발</option>
+            </select>
+        </form>
+        <a class='btn btn-secondary create-btn ms-3' href="{% url 'todos:create' %}">+ 할 일 생성</a>
+    </div>
+
+    {% if todos %}
+        {% comment %} 할 일 카드 라벨 {% endcomment %}
+        <div class='d-flex justify-content-between mt-4 padding font-14'>
+            <span class="font-lightgray col-4 flex-grow-1 ms-4">할 일</span>
+            <span class="font-lightgray col-2 text-center">카테고리</span>
+            <span class="font-lightgray col-2 text-center">마감일</span>
+            <span class="font-lightgray col-1 text-center">수 정</span>
+            <span class="font-lightgray col-1 text-center">삭 제</span>
+            <span class="font-lightgray col-1 text-center">완 료</span>
         </div>
-    </div>
 
-    <div class="d-flex justify-content-between mt-4 padding">
-        <h2>Tasks</h2>
-        <span class="font-gray font-18 mt-2 ms-4 flex-grow-1"><b>정렬 | </b></span>
+        {% comment %} 할 일 카드 {% endcomment %}
+        <div class='mb-5'>
+            {% for todo in todos %}
+                <div class="card-form d-flex align-items-center mt-3 margin">
+                    <div class='{% if todo.category == '집안일' %} cate-home {% elif todo.category == '문화생활' %} cate-culture {% elif todo.category == '업무' %} cate-work {% elif todo.category == '자기계발' %} cate-study
+                    {% endif %}'></div>
+                    <div class='d-flex row col-5'>
+                        <a href="{% url 'todos:detail' todo.pk %}" class='font-18'>{{ todo.title }}</a>
+                        <span class='font-12 font-lightgray'>{{ todo.created_at|date:'Y-m-d' }}</span>
+                    </div>
+                    <span class='col-2 text-center font-lightgray font-14'>{{ todo.category }}</span>
+                    <span class='col-2 text-center font-lightgray font-14'>{{ todo.deadline|date:'Y-m-d' }}</span>
 
-        <a class='btn btn-secondary' id='create-btn' href="{% url 'todos:create' %}">+ 할 일 생성</a>
-    </div>
+                    {% comment %} edit, delete, check {% endcomment %}
+                    <a href="{% url 'todos:update' todo.pk %}" class='col-1 text-center font-lightgray mt-1'>
+                        <span class="material-symbols-outlined">
+                            edit
+                        </span>
+                    </a>
+                    <a href="{% url 'todos:delete' todo.pk %}" class='col-1 text-center font-lightgray mt-1'>
+                        <span class="material-symbols-outlined">
+                            delete
+                        </span>
+                    </a>
+                    <input class="form-check-input check-box mt-0" type="checkbox" aria-label="Checkbox for following text input">
+                </div>
+            {% endfor %}
 
-    <div class='d-flex justify-content-between mt-4 padding'>
-        <span class="font-lightgray col-4 ms-4">할 일</span>
-        <span class="font-lightgray col-2">카테고리</span>
-        <span class="font-lightgray col-2">마감일</span>
-        <span class="font-lightgray col-1">수 정</span>
-        <span class="font-lightgray col-1">삭 제</span>
-        <span class="font-lightgray me-4">완 료</span>
-    </div>
-
-    <div>
-    {% for todo in todos %}
-        <div class="card d-flex justify-content-between mt-3 margin">
-            <span class="col-4 ms-4"><a href="{% url 'todos:detail' todo.pk %}">{{ todo.title }}</a></span>
-            <span class="col-2">{{ todo.category }}</span>
-            <span class="col-2">{{ todo.deadline|date:'Y-m-d' }}</span>
-
-            <a href="{% url 'todos:update' todo.pk %}">수정하기</a>
-            <a href="{% url 'todos:delete' todo.pk %}">삭제하기</a>
+            {% comment %} 위로가기 버튼 {% endcomment %}
+            <a href="#top" class='top-btn'>
+                <span class="material-symbols-outlined">
+                    arrow_upward
+                </span>
+            </a>
         </div>
+    {% else %}
+    <div class='nothing'>
+        <span class='font-lightgray'>할 일을 생성해주세요.<br></span>
+        <span class='font-lightgray font-18'>There's nothing to do. Please create something to do.</span>
     </div>
-    {% endfor %}
+    {% endif %}
 {% endblock body %}
