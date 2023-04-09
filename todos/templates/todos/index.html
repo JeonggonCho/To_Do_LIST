@@ -22,6 +22,11 @@
     box-shadow: 1px 1px 10px lightgray;
 }
 
+.arrange:hover {
+    transform: scale(1.05);
+    color: #333333;
+}
+
 .cate-home {
     height: 50px;
     width: 6px;
@@ -55,9 +60,9 @@
 }
 
 .check-box {
+    border: 1.2px solid #999999;
     width: 20px;
     height: 20px;
-    margin-left: 20px;
 }
 
 .top-btn {
@@ -121,13 +126,17 @@
 
 {% block body %}
     {% comment %} 정렬 및 카테고리, 생성버튼 {% endcomment %}
-    <div class="d-flex justify-content-between mt-4 padding align-items-center">
+    <div class="d-flex justify-content-between mt-4 mb-4 padding align-items-center">
         <h3>Tasks</h3>
-        <span class="font-gray font-14 ms-4 flex-grow-1">정렬 | </span>
+        <span class="font-gray font-14 ms-4">정렬 | </span>
+        <a href="#" class='arrange font-gray font-14 ms-3'>생성날짜순</a>
+        <a href="#" class='arrange font-gray font-14 ms-3'>카테고리순</a>
+        <a href="#" class='arrange font-gray font-14 ms-3'>마감날짜순</a>
 
-        <form action="{% url 'todos:category' %}" method='POST'>
-            {% csrf_token %}
-            <select class="form-select select-box" name='category' id='category'>
+        <div class="flex-grow-1"></div>
+
+        <form action="{% url 'todos:category' %}" method='GET'>
+            <select class="form-select select-box" name='category_mode' onChange="form.submit()">
                 <option selected>카테고리별</option>
                 <option value="집안일">집안일</option>
                 <option value="문화생활">문화생활</option>
@@ -140,7 +149,7 @@
 
     {% if todos %}
         {% comment %} 할 일 카드 라벨 {% endcomment %}
-        <div class='d-flex justify-content-between mt-4 padding font-14'>
+        <div class='d-flex justify-content-between padding font-14'>
             <span class="font-lightgray col-4 flex-grow-1 ms-4">할 일</span>
             <span class="font-lightgray col-2 text-center">카테고리</span>
             <span class="font-lightgray col-2 text-center">마감일</span>
@@ -173,7 +182,7 @@
                             delete
                         </span>
                     </a>
-                    <input class="form-check-input check-box mt-0" type="checkbox" aria-label="Checkbox for following text input">
+                    <input class="form-check-input check-box mx-auto col-1 mt-0" type="checkbox" aria-label="Checkbox for following text input">
                 </div>
             {% endfor %}
 
@@ -185,9 +194,9 @@
             </a>
         </div>
     {% else %}
-    <div class='nothing'>
-        <span class='font-lightgray'>할 일을 생성해주세요.<br></span>
-        <span class='font-lightgray font-18'>There's nothing to do. Please create something to do.</span>
-    </div>
+        <div class='nothing'>
+            <span class='font-lightgray'>할 일을 생성해주세요.<br></span>
+            <span class='font-lightgray font-18'>There's nothing to do. Please create something to do.</span>
+        </div>
     {% endif %}
 {% endblock body %}

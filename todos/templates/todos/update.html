@@ -7,7 +7,7 @@
 
 {% block body %}
     <div class="mt-4 padding">
-        <h3>수정하기</h3>
+        <h3 class='mb-4'>수정하기</h3>
 
         <form action="{% url 'todos:update' todo.pk %}" method='POST'>
             {% csrf_token %}

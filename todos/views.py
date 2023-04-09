@@ -71,9 +71,21 @@ def delete(request, todo_pk):
     return redirect('todos:index')
 
 
-def category(request, category):
-    category = Todo.objects.filter(category=request.POST)
+def category(request):
+    category_mode = request.GET.get('category_mode')
+    if category_mode == '집안일':
+        todos = Todo.objects.filter(category='집안일')
+    elif category_mode == '문화생활':
+        todos = Todo.objects.filter(category='문화생활')
+    elif category_mode == '업무':
+        todos = Todo.objects.filter(category='업무')
+    elif category_mode == '자기계발':
+        todos = Todo.objects.filter(category='자기계발')
+    todos_num = Todo.objects.all().count()
+    todos_done = Todo.objects.filter(completed=True).count()
     context = {
-        'todos': category,
+        'todos': todos,
+        'todos_num': todos_num,
+        'todos_done': todos_done,
     }
     return render(request, 'todos/index.html', context)
