@@ -5,17 +5,30 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+
+    {% comment %} update_modal 실행시, update url 가져오기 {% endcomment %}
+    <script>
+        $(document).ready(function() {
+            $("#update").on("show.bs.modal", function(e) {
+            var $modal = $(this);
+            var remoteUrl = e.relatedTarget.dataset.remote;
+            if (remoteUrl) {
+                $modal.find(".modal-content").load(remoteUrl);
+            }
+            });
+        });
+    </script>
 </head>
 <body>
-    <div class="mt-4 mb-2 padding">
+    <div class="mt-4 mb-4 padding">
         <div class='d-flex align-items-center gap-3'>
             <h3 class='flex-grow-1'>{{ todo.title }}</h3>
-            <a href="{% url 'todos:update' todo.pk %}" class='text-center font-lightgray'>
+            <a data-remote="{% url 'todos:update' todo.pk %}" class='text-center font-lightgray cursor' data-bs-toggle="modal" data-bs-target="#update">
                 <span class="material-symbols-outlined">
                     edit
                 </span>
             </a>
-            <a href="{% url 'todos:delete' todo.pk %}" class='text-center font-lightgray'>
+            <a href="{% url 'todos:delete' todo.pk %}" class='text-center font-lightgray' onclick="return confirm('정말 삭제하시겠습니까?');">
                 <span class="material-symbols-outlined">
                     delete
                 </span>
@@ -40,6 +53,14 @@
             <div class='d-flex align-items-center'>
                 <p class='col-2 font-12 font-lightgray'>내용</p>
                 <p class='col-10'>{{ todo.content }}</p>
+            </div>
+        </div>
+    </div>
+    
+    {% comment %} update_modal {% endcomment %}
+    <div class="modal fade" id="update" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
             </div>
         </div>
     </div>

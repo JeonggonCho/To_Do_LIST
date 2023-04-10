@@ -12,16 +12,6 @@ class TodoForm(forms.ModelForm):
         ),
     )
 
-    content = forms.CharField(
-        label='내 용',
-        widget=forms.Textarea(
-            attrs={
-                'class': 'my-content',
-                'placeholder': '내용을 입력해주세요',
-            },
-        ),
-    )
-
     deadline = forms.DateField(
         label='마감일',
         widget=forms.DateInput(
@@ -36,7 +26,32 @@ class TodoForm(forms.ModelForm):
         choices=CHOICES,
         widget=forms.Select,
     )
+
+    content = forms.CharField(
+        label='내 용',
+        widget=forms.Textarea(
+            attrs={
+                'cols': 44,
+                'rows': 3,
+                'class': 'my-content',
+                'placeholder': '내용을 입력해주세요',
+            },
+        ),
+    )
     
     class Meta:
         model = Todo
         exclude = ('completed',)
+
+
+class CompleteForm(forms.ModelForm):
+    completed = forms.BooleanField(
+        widget=forms.CheckboxInput(
+        attrs={
+            'class': 'check-box',
+            },
+        ),
+    )
+    class Meta:
+        model = Todo
+        fields = ('completed',)

@@ -1,19 +1,29 @@
-{% extends 'todos/!base.html' %}
-
-
-{% block style %}
-{% endblock style %}
-
-
-{% block body %}
-<div class="mt-4 padding">
-    <h3 class='mb-4'>할 일 생성하기</h3>
-
-    <form action="{% url 'todos:create' %}" method='POST'>
-        {% csrf_token %}
-        {{ form.as_p }}
-        <a class="btn btn-secondary mt-4" href="{% url 'todos:index' %}">뒤로가기</a>
-        <button type="submit" class="btn btn-primary mt-4">생성하기</button>
-    </form>
-</div>
-{% endblock body %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="mt-4 mb-4 padding">
+        <h3 class='mb-4'>생성하기</h3>
+        <hr>
+        <form action="{% url 'todos:create' %}" method='POST'>
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="mb-2">
+                <div>
+                    {{ field.label }}
+                </div>
+                <div>
+                    {{ field }}
+                </div>
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-secondary mb-1">생 성</button>
+        </form>
+    </div>
+</body>
+</html>

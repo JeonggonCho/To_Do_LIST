@@ -1,12 +1,38 @@
 {% extends 'todos/!base.html' %}
-{% load static %}
 
 {% block script %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+{% comment %} detail_modal 실행시, detail url 가져오기 {% endcomment %}
 <script>
     $(document).ready(function() {
         $("#detail").on("show.bs.modal", function(e) {
+        var $modal = $(this);
+        var remoteUrl = e.relatedTarget.dataset.remote;
+        if (remoteUrl) {
+            $modal.find(".modal-content").load(remoteUrl);
+        }
+        });
+    });
+</script>
+
+{% comment %} create_modal 실행시, create url 가져오기 {% endcomment %}
+<script>
+    $(document).ready(function() {
+        $("#create").on("show.bs.modal", function(e) {
+        var $modal = $(this);
+        var remoteUrl = e.relatedTarget.dataset.remote;
+        if (remoteUrl) {
+            $modal.find(".modal-content").load(remoteUrl);
+        }
+        });
+    });
+</script>
+
+{% comment %} update_modal 실행시, update url 가져오기 {% endcomment %}
+<script>
+    $(document).ready(function() {
+        $("#update").on("show.bs.modal", function(e) {
         var $modal = $(this);
         var remoteUrl = e.relatedTarget.dataset.remote;
         if (remoteUrl) {
@@ -48,7 +74,7 @@
     color: #333333;
 }
 
-.title {
+.cursor {
     cursor: pointer;
 }
 
@@ -86,8 +112,8 @@
 
 .check-box {
     border: 1.2px solid #999999;
-    width: 20px;
-    height: 20px;
+    width: 100%;
+    height: 100%;
 }
 
 .top-btn {
@@ -172,7 +198,9 @@
                 <option value="자기계발">자기계발</option>
             </select>
         </form>
-        <a class='btn btn-secondary create-btn ms-3' href="{% url 'todos:create' %}">+ 할 일 생성</a>
+
+        {% comment %} 할 일 생성 버튼 {% endcomment %}
+        <a data-remote="{% url 'todos:create' %}" class='btn btn-secondary create-btn ms-3' data-bs-toggle="modal" data-bs-target="#create">+ 할 일 생성</a>
     </div>
 
     {% if todos_yet %}
@@ -199,7 +227,7 @@
 
                     {% comment %} 할 일 title, created_at {% endcomment %}
                     <div class='d-flex row col-5'>
-                        <a data-remote="{% url 'todos:detail' todo.pk %}" class='font-18 title' data-bs-toggle="modal" data-bs-target="#detail">
+                        <a data-remote="{% url 'todos:detail' todo.pk %}" class='font-18 cursor' data-bs-toggle="modal" data-bs-target="#detail">
                             {{ todo.title }}
                         </a>
                         <span class='font-12 font-lightgray'>{{ todo.created_at|date:'Y-m-d' }}</span>
@@ -209,18 +237,29 @@
                     <span class='col-2 text-center font-lightgray font-14'>{{ todo.category }}</span>
                     <span class='col-2 text-center font-lightgray font-14'>{{ todo.deadline|date:'Y-m-d' }}</span>
 
-                    {% comment %} edit, delete, check {% endcomment %}
-                    <a href="{% url 'todos:update' todo.pk %}" class='col-1 text-center font-lightgray mt-1'>
+                    {% comment %} edit {% endcomment %}
+                    <a data-remote="{% url 'todos:update' todo.pk %}" class='col-1 text-center font-lightgray mt-1 cursor' data-bs-toggle="modal" data-bs-target="#update">
                         <span class="material-symbols-outlined">
                             edit
                         </span>
                     </a>
-                    <a href="{% url 'todos:delete' todo.pk %}" class='col-1 text-center font-lightgray mt-1'>
+
+                    {% comment %} delete {% endcomment %}
+                    <a href="{% url 'todos:delete' todo.pk %}" class='col-1 text-center font-lightgray mt-1' onclick="return confirm('정말 삭제하시겠습니까?');">
                         <span class="material-symbols-outlined">
                             delete
                         </span>
                     </a>
-                    <input class="form-check-input check-box mx-auto col-1 mt-0" type="checkbox" aria-label="Checkbox for following text input">
+
+                    {% comment %} check {% endcomment %}
+                    <div class="col-1 mx-auto">
+                        {% comment %} <form action="{% url 'todos:completed' todo.pk %}" method='POST'> {% endcomment %}
+                            {% csrf_token %}
+                            {% for field in complete_form %}
+                                {{ field }}
+                            {% endfor %}
+                        </form>
+                    </div>
                 </div>
             {% endfor %}
 
@@ -272,8 +311,24 @@
     {% endif %}
 
 
-    {% comment %} 디테일 모달 {% endcomment %}
+    {% comment %} detail_modal {% endcomment %}
     <div class="modal fade" id="detail" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            </div>
+        </div>
+    </div>
+
+    {% comment %} create_modal {% endcomment %}
+    <div class="modal fade" id="create" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            </div>
+        </div>
+    </div>
+
+    {% comment %} update_modal {% endcomment %}
+    <div class="modal fade" id="update" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
             </div>

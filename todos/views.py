@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import Todo
-from .forms import TodoForm
+from .forms import TodoForm, CompleteForm
 
 # Create your views here.
 def index(request):
@@ -8,11 +8,13 @@ def index(request):
     todos_done = Todo.objects.filter(completed=True)
     todos_num = Todo.objects.all().count()
     todos_done_num = Todo.objects.filter(completed=True).count()
+    complete_form = CompleteForm()
     context = {
         'todos_yet': todos_yet,
         'todos_done': todos_done,
         'todos_num': todos_num,
         'todos_done_num': todos_done_num,
+        'complete_form': complete_form,
     }
     return render(request, 'todos/index.html', context)
 
@@ -32,7 +34,7 @@ def create(request):
         form = TodoForm(request.POST)
         if form.is_valid():
             todo = form.save()
-            return redirect('todos:detail', todo.pk)
+            return redirect('todos:index')
     else:
         form = TodoForm()
     context = {
@@ -51,7 +53,7 @@ def update(request, todo_pk):
         form = TodoForm(request.POST, instance=todo)
         if form.is_valid():
             form.save()
-            return redirect('todos:detail', todo.pk)
+            return redirect('todos:index')
     else:
         form = TodoForm(instance=todo)
     context = {
@@ -104,3 +106,8 @@ def sorting(request):
         'todos_yet': todos_yet,
     }
     return render(request, 'todos/index.html', context)
+
+
+# def completed(request):
+
+#     return redirect('todos:index')
