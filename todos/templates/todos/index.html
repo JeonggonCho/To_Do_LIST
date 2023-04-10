@@ -1,10 +1,26 @@
 {% extends 'todos/!base.html' %}
+{% load static %}
+
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $("#detail").on("show.bs.modal", function(e) {
+        var $modal = $(this);
+        var remoteUrl = e.relatedTarget.dataset.remote;
+        if (remoteUrl) {
+            $modal.find(".modal-content").load(remoteUrl);
+        }
+        });
+    });
+</script>
+{% endblock script %}
 
 
 {% block style %}
 .create-btn {
     height: 36px;
-    width: 100px;
     margin-top: 4px;
     font-size: 15px;
     padding-bottom: 3px;
@@ -15,6 +31,7 @@
     border: none;
     background-color: white;
     border-radius: 10px;
+    transition: all 0.2s linear;
 }
 
 .card-form:hover {
@@ -22,9 +39,17 @@
     box-shadow: 1px 1px 10px lightgray;
 }
 
+.arrange {
+    transition: all 0.2s linear;
+}
+
 .arrange:hover {
-    transform: scale(1.05);
+    transform: scale(1.1);
     color: #333333;
+}
+
+.title {
+    cursor: pointer;
 }
 
 .cate-home {
@@ -80,7 +105,6 @@
 }
 
 .select-box {
-    width: 120px;
     height: 37px;
     margin-top: 4px;
     background-color: #6c757d;
@@ -128,16 +152,20 @@
     {% comment %} 정렬 및 카테고리, 생성버튼 {% endcomment %}
     <div class="d-flex justify-content-between mt-4 mb-4 padding align-items-center">
         <h3>Tasks</h3>
+
+        {% comment %} 필드별 정렬버튼 {% endcomment %}
         <span class="font-gray font-14 ms-4">정렬 | </span>
-        <a href="#" class='arrange font-gray font-14 ms-3'>생성날짜순</a>
-        <a href="#" class='arrange font-gray font-14 ms-3'>카테고리순</a>
-        <a href="#" class='arrange font-gray font-14 ms-3'>마감날짜순</a>
+        <a href="{% url 'todos:sorting' %}" class='arrange font-gray font-14 ms-3' type='submit' name='sorting_mode' value='생성날짜순'>생성날짜순</a>
+        <a href="{% url 'todos:sorting' %}" class='arrange font-gray font-14 ms-3' type='submit' name='sorting_mode' value='카테고리순'>카테고리순</a>
+        <a href="{% url 'todos:sorting' %}" class='arrange font-gray font-14 ms-3' type='submit' name='sorting_mode' value='마감날짜순'>마감날짜순</a>
 
         <div class="flex-grow-1"></div>
 
+        {% comment %} 카테고리별 조회 select {% endcomment %}
         <form action="{% url 'todos:category' %}" method='GET'>
             <select class="form-select select-box" name='category_mode' onChange="form.submit()">
                 <option selected>카테고리별</option>
+                <option value="전체">전체</option>
                 <option value="집안일">집안일</option>
                 <option value="문화생활">문화생활</option>
                 <option value="업무">업무</option>
@@ -147,7 +175,7 @@
         <a class='btn btn-secondary create-btn ms-3' href="{% url 'todos:create' %}">+ 할 일 생성</a>
     </div>
 
-    {% if todos %}
+    {% if todos_yet %}
         {% comment %} 할 일 카드 라벨 {% endcomment %}
         <div class='d-flex justify-content-between padding font-14'>
             <span class="font-lightgray col-4 flex-grow-1 ms-4">할 일</span>
@@ -160,14 +188,24 @@
 
         {% comment %} 할 일 카드 {% endcomment %}
         <div class='mb-5'>
-            {% for todo in todos %}
+            {% for todo in todos_yet %}
                 <div class="card-form d-flex align-items-center mt-3 margin">
-                    <div class='{% if todo.category == '집안일' %} cate-home {% elif todo.category == '문화생활' %} cate-culture {% elif todo.category == '업무' %} cate-work {% elif todo.category == '자기계발' %} cate-study
-                    {% endif %}'></div>
+
+                    {% comment %} 색상태그 {% endcomment %}
+                    <div class='{% if todo.category == '집안일' %} cate-home
+                                {% elif todo.category == '문화생활' %} cate-culture
+                                {% elif todo.category == '업무' %} cate-work
+                                {% elif todo.category == '자기계발' %} cate-study{% endif %}'></div>
+
+                    {% comment %} 할 일 title, created_at {% endcomment %}
                     <div class='d-flex row col-5'>
-                        <a href="{% url 'todos:detail' todo.pk %}" class='font-18'>{{ todo.title }}</a>
+                        <a data-remote="{% url 'todos:detail' todo.pk %}" class='font-18 title' data-bs-toggle="modal" data-bs-target="#detail">
+                            {{ todo.title }}
+                        </a>
                         <span class='font-12 font-lightgray'>{{ todo.created_at|date:'Y-m-d' }}</span>
                     </div>
+
+                    {% comment %} 할 일 category, deadline {% endcomment %}
                     <span class='col-2 text-center font-lightgray font-14'>{{ todo.category }}</span>
                     <span class='col-2 text-center font-lightgray font-14'>{{ todo.deadline|date:'Y-m-d' }}</span>
 
@@ -193,10 +231,52 @@
                 </span>
             </a>
         </div>
+        {% if todos_done %}
+            <hr>
+            <div class="d-flex justify-content-between mt-4 mb-4 padding align-items-center">
+                <h3>Tasks</h3>
+
+                {% comment %} 완료한 할 일 카드 {% endcomment %}
+                <div class='mb-5'>
+                    {% for todo in todos_done %}
+                        <div class="card-form d-flex align-items-center mt-3 margin">
+                            <div class='{% if todo.category == '집안일' %} cate-home {% elif todo.category == '문화생활' %} cate-culture {% elif todo.category == '업무' %} cate-work {% elif todo.category == '자기계발' %} cate-study {% endif %}'></div>
+                            <div class='d-flex row col-5'>
+                            <a href="{% url 'todos:detail' todo.pk %}" class='font-18'>{{ todo.title }}</a>
+                            <span class='font-12 font-lightgray'>{{ todo.created_at|date:'Y-m-d' }}</span>
+                        </div>
+                        <span class='col-2 text-center font-lightgray font-14'>{{ todo.category }}</span>
+                        <span class='col-2 text-center font-lightgray font-14'>{{ todo.deadline|date:'Y-m-d' }}</span>
+
+                        {% comment %} edit, delete, check {% endcomment %}
+                        <a href="{% url 'todos:update' todo.pk %}" class='col-1 text-center font-lightgray mt-1'>
+                            <span class="material-symbols-outlined">
+                                edit
+                            </span>
+                        </a>
+                        <a href="{% url 'todos:delete' todo.pk %}" class='col-1 text-center font-lightgray mt-1'>
+                            <span class="material-symbols-outlined">
+                                delete
+                            </span>
+                        </a>
+                        <input class="form-check-input check-box mx-auto col-1 mt-0" type="checkbox" aria-label="Checkbox for following text input">
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
     {% else %}
         <div class='nothing'>
             <span class='font-lightgray'>할 일을 생성해주세요.<br></span>
             <span class='font-lightgray font-18'>There's nothing to do. Please create something to do.</span>
         </div>
     {% endif %}
+
+
+    {% comment %} 디테일 모달 {% endcomment %}
+    <div class="modal fade" id="detail" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            </div>
+        </div>
+    </div>
 {% endblock body %}
