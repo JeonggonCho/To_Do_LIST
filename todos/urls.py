@@ -10,5 +10,5 @@ urlpatterns = [
     path('delete/<int:todo_pk>/', views.delete, name='delete'),
     path('category/', views.category, name='category'),
     path('sorting/', views.sorting, name='sorting'),
-    # path('completed/', views.completed, name='completed'),
+    path('completed/<int:todo_pk>', views.completed, name='completed'),
 ]

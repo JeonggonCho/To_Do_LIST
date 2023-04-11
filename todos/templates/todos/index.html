@@ -253,7 +253,7 @@
 
                     {% comment %} check {% endcomment %}
                     <div class="col-1 mx-auto">
-                        {% comment %} <form action="{% url 'todos:completed' todo.pk %}" method='POST'> {% endcomment %}
+                        <form action="{% url 'todos:completed' todo.pk %}" method='POST' id='complete-form'>
                             {% csrf_token %}
                             {% for field in complete_form %}
                                 {{ field }}
@@ -334,4 +334,12 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.getElementById("complete-form").addEventListener("click", function() {
+            if (document.getElementById("complete-form").checked) {
+                document.getElementById("complete-form").submit();
+            }
+        });
+    </script>
 {% endblock body %}

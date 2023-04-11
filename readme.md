@@ -67,7 +67,11 @@
 
 ### 1. 카테고리별 조회
 
-- 문제점 : 할 일의 목록에서 카테고리 별로 조회하는 기능을 구현하는데 있어 `html`의 `select form`에서 받은 데이터를 `views.py`로 어떻게 보내고 처리해야하는지에 대한 방법이 어려웠다.
+- 문제점
+
+    : 할 일의 목록에서 카테고리 별로 조회하는 기능을 구현하는데 있어 `html`의 `select form`에서 받은 데이터를 `views.py`로 어떻게 보내고 처리해야 하는지에 대한 방법이 어려웠다.
+
+<br>
 
 - 해결방법
     - Query Parameter로 값을 보내는 방법
@@ -145,3 +149,112 @@
 ![](readme_asset/%EC%B9%B4%ED%85%8C%EA%B3%A0%EB%A6%AC%EB%B3%84%20%EC%A1%B0%ED%9A%8C%20%ED%95%B4%EA%B2%B0.JPG)
 
 < 카테고리별로 조회 화면 >
+
+<br>
+<br>
+<br>
+
+### 2. 할 일 생성, 단일 조회, 수정 시, modal을 통해서 수행하기
+
+- 문제점
+
+    : 쉬운 방법은 각각의 기능에 따른 html 파일을 생성하고, 각각의 페이지에서 기능을 수행하는 것이다. 하지만 modal을 통해 기능을 구현해보고 싶었다. 따라서 `처음`에는 bootstrap의 modal을 사용하고, `modal`의 body에 `Django Template Language(DTL)`을 넣어 데이터를 가져오려고 했는데 출력이 되지 않았다.
+
+    <br>
+
+    이러한 현상의 원인으로는 `modal창`의 경우, `동적`으로 열리고 닫히는 반면, `DTL 코드`의 경우, `서버 측에서 렌더링`이 되기 때문에 이러한 동적인 부분에 대응이 잘 안 될 수 있다. 즉, modal창이 렌더링되기 전, DTL 코드가 실행되어 데이터가 조회되지 않을 수 있다.
+
+    <br>
+
+    또는 `modal창`이 다른 `DOM 요소와의 분리`되어 있어 DTL 코드가 해당 요소에 액세스 하지 못할 수 있다.
+
+<br>
+
+- 해결방법
+
+    - jquery를 사용하여, modal을 실행할 경우, data-remote로 원하는 url을 modal 창에 로드하는 방법
+
+    <br>
+
+    1. jquery CDN을 가져온다.
+
+    <br>
+
+    ```html
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    ```
+
+    2. modal이 실행되는 버튼을 만든다.
+        - `data-remote`에 실행할 `url`을 넣어주어야 한다.
+        - `data-bs-target`에 `id`를 지정한다.
+
+    <br>
+
+    ```html
+    <!-- 할 일 제목 클릭 시, detail로 연결되는 modal -->
+
+    <a data-remote="{% url 'todos:detail' todo.pk %}" data-bs-toggle="modal" data-bs-target="#detail">
+        {{ todo.title }}
+    </a>
+    ```
+
+    3. 외부에 modal 창을 생성한다.
+        - modal의 id를 위의 2번에서 작성한 id와 맞춰준다.
+
+    <br>
+
+    ```html
+    <!-- detail_modal -->
+
+    <div class="modal fade" id="detail" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            </div>
+        </div>
+    </div>
+    ```
+
+    4. modal이 실행될 경우, data-remote의 url을 가져올 수 있도록 JavaScript 코드를 추가한다.
+        - `id`를 `modal의 id`와 맞춰서 어떤 modal에서 script를 적용할지 선택한다.
+        - `show.bs.modal` : modal이 열릴 때 바로 이벤트가 실행된다.
+        - `var $modal = $(this)`: 현재 이벤트가 발생한 modal창을 jQuery 객체로 가져온다.
+        - `var remoteUrl = e.relatedTarget.dataset.remote;` : modal trigger 버튼요소의 data-remote 속성을 가져온다.
+        - `if (remoteUrl) {$modal.find(".modal-content").load(remoteUrl);}` : remoteUrl이 존재하면, modal내부의 modal-content 요소를 선택하고, 해당부분에 url을 통해 가져온 데이터를 로드하여 표시하게된다. 
+    
+    <br>
+
+    ```html
+    <!-- script 코드 -->
+
+    <script>
+    $(document).ready(function() {
+        $("#detail").on("show.bs.modal", function(e) {
+        var $modal = $(this);
+        var remoteUrl = e.relatedTarget.dataset.remote;
+        if (remoteUrl) {
+            $modal.find(".modal-content").load(remoteUrl);
+            }
+        });
+    });
+    </script>
+    ```
+
+    - 이 방법의 경우도, modal에 로드하여 표시할 `외부 템플릿을 각각 작성`하여야 한다. 하지만 이를 통해 웹페이지가 아닌 modal을 통해 데이터를 조회 할 수 있게 되었다.
+
+<br>
+
+![](readme_asset/%EC%A1%B0%ED%9A%8C%ED%95%98%EA%B8%B0_modal%20%ED%95%B4%EA%B2%B0.JPG)
+
+< 단일 할 일 modal 화면 >
+
+<br>
+
+![](readme_asset/%EC%83%9D%EC%84%B1%ED%95%98%EA%B8%B0_modal%20%ED%95%B4%EA%B2%B0.JPG)
+
+< 생성하기 modal 화면 >
+
+<br>
+
+![](readme_asset/%EC%88%98%EC%A0%95%ED%95%98%EA%B8%B0_modal%20%ED%95%B4%EA%B2%B0.JPG)
+
+< 수정하기 modal 화면 >

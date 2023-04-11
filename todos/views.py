@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Todo
 from .forms import TodoForm, CompleteForm
 
@@ -108,6 +108,8 @@ def sorting(request):
     return render(request, 'todos/index.html', context)
 
 
-# def completed(request):
-
-#     return redirect('todos:index')
+def completed(request, todo_pk):
+    todo = get_object_or_404(Todo, pk=todo_pk)
+    todo.completed = not todo.completed
+    todo.save()
+    return redirect('todos:index')
